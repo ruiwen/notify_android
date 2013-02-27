@@ -6,31 +6,108 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import java.lang.Void;
+import java.lang.reflect.Field;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.app.Notification;
+import android.content.Context;
+import android.net.DhcpInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.RemoteViews;
 
 public class NotificationService extends AccessibilityService {
 
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
 		// TODO Auto-generated method stub
-		Log.d("Notify", "Got Event: " + event);
+		// Log.d("Notify", "Got Event: " + event);
 		final int eventType = event.getEventType();
 		String eventText = null;
 		if(eventType == AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED) {
-			Log.d("Notify", "Text: " + event.getText());
-			Log.d("Notify", "Type: " + event.getEventType());
-			Log.d("Notify", "Package: " + event.getPackageName());
+//			Log.d("Notify", "Text: " + event.getText());
+//			//Log.d("Notify", "Type: " + event.getEventType());
+//			Log.d("Notify", "Package: " + event.getPackageName());
+//			Log.d("Notify", "Parcel: " + event.getParcelableData());
 			
+			
+			String title = null;
+			String info = null;
+			String text = event.getText().toString();
+			
+			// UDP broadcast code obtained from
+			// https://code.google.com/p/boxeeremote/wiki/AndroidUDP
+			Notification notification = (Notification) event.getParcelableData();
+		    RemoteViews views = notification.contentView;
+		    Class secretClass = views.getClass();
+
+		    try {
+		        Map<Integer, String> txt = new HashMap<Integer, String>();
+
+		        Field outerFields[] = secretClass.getDeclaredFields();
+		        for (int i = 0; i < outerFields.length; i++) {
+		            if (!outerFields[i].getName().equals("mActions")) continue;
+
+		            outerFields[i].setAccessible(true);
+
+	                Object value = null;
+	                Integer type = null;
+	                Integer viewId = null;
+
+		            ArrayList<Object> actions = (ArrayList<Object>) outerFields[i].get(views);
+		            for (Object action : actions) {
+		                Field innerFields[] = action.getClass().getDeclaredFields();
+
+		                for (Field field : innerFields) {
+		                    field.setAccessible(true);
+		                    
+		                    try {
+			                    if (field.getName().equals("value")) {
+			                        value = field.get(action);
+			                    } 
+			                    if (field.getName().equals("type")) {
+			                        type = field.getInt(action);
+			                    }
+			                    if (field.getName().equals("viewId")) {
+			                        viewId = field.getInt(action);
+			                    }
+		                    
+		                    }
+		                    catch(Exception e) { /*e.printStackTrace();*/ }
+
+		                }
+
+		                if (type != null /* && (type == 9 || type == 10)*/) {
+		                    txt.put(viewId, value.toString());
+		                    
+		                    Log.d("Notify", "txt: " + txt);
+		                }
+		            }
+
+//		            Log.d("Notify", "Raw: " + txt);
+//		            Log.d("Notify", "Title: " + txt.get(16908310));
+//		            Log.d("Notify", "Info: " + txt.get(16909082));
+//		            Log.d("Notify", "Text: " + txt.get(16908358));
+		            
+		            title = (txt.get(16908310) != null) ? txt.get(16908310) : txt.get(2131230870);
+		            info = txt.get(16909082);
+		            text = (txt.get(16908358) != null) ? txt.get(16908358) : txt.get(2131230787);
+		            
+		        }
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
 			
 			// Create socket
-			new Notify().execute(new String[] {event.getText().toString(), event.getPackageName().toString()});
+			new Notify().execute(new String[] {title, text, event.getPackageName().toString()});
 			
 		}
 	}
@@ -38,28 +115,68 @@ public class NotificationService extends AccessibilityService {
 
 	private class Notify extends AsyncTask<String, Void, Void> {
 	
+//		protected String getWifiIpAddr() {
+//		   WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+//		   WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+//		   int ip = wifiInfo.getIpAddress();
+//
+//		   String ipString = String.format(
+//		   "%d.%d.%d.%d",
+//		   (ip & 0xff),
+//		   (ip >> 8 & 0xff),
+//		   (ip >> 16 & 0xff),
+//		   (ip >> 24 & 0xff));
+//
+//		   Log.d("Notify", "ipString: " + ipString);
+//
+//		   return ipString;
+//		}
+//
+//
+//		protected NetworkInterface getWifiInterface(InetAddress addr) throws SocketException {
+//			return NetworkInterface.getByInetAddress(addr);
+//		}	
+
+		protected InetAddress getBroadcastAddress() throws IOException {
+		    WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+		    DhcpInfo dhcp = wifi.getDhcpInfo();
+		    // handle null somehow
+
+		    int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
+		    byte[] quads = new byte[4];
+		    for (int k = 0; k < 4; k++)
+		      quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
+		    return InetAddress.getByAddress(quads);
+		}
+	
 		@Override
 		protected Void doInBackground(String... params) {
 	        // Stuff
 	    	try {
 	    		Log.d("Notify", "Do in background");
 				DatagramSocket dsock = new DatagramSocket();
-				InetAddress[] addr = InetAddress.getAllByName("192.168.43.169");
-				Log.d("Notify", "Addr: " + addr[0]);
-				dsock.connect(addr[0], 9000);
+				dsock.setBroadcast(true);
+				//InetAddress[] addr = InetAddress.getAllByName("192.168.1.");
+				//NetworkInterface iface = getWifiInterface(InetAddress.getAllByName(getWifiIpAddr())[0]);
+				//InetAddr addr = iface.get
+				
+				Log.d("Notify", "Addr: " + getBroadcastAddress());
+				dsock.connect(getBroadcastAddress(), 9000);
 				Log.d("Notify", "Connected: " + dsock.isConnected());
 				
 				// Parse params
-				Log.d("Notify", "Parsing..");
+				//Log.d("Notify", "Parsing..");
 				StringBuilder b = new StringBuilder();
 				for(String p : params) {
 					b.append(p + "|");
 				}
 				Log.d("Notify", "UDP: " + b.toString());
-				DatagramPacket dpack = new DatagramPacket(b.toString().getBytes(), b.toString().length()-1);
+				DatagramPacket dpack = new DatagramPacket(b.toString().getBytes(), b.toString().length()-1, getBroadcastAddress(), 9000);
 				
-				Log.d("Notify", "Sending..");
+				//Log.d("Notify", "Sending..");
 				dsock.send(dpack);
+				
+				dsock.close();
 				
 			} catch (SocketException e) {
 				Log.d("Notify", "SocketException: " + e);
