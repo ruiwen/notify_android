@@ -43,13 +43,15 @@ public class NotificationService extends AccessibilityService {
 			String info = null;
 			String text = event.getText().toString();
 			
-			// UDP broadcast code obtained from
-			// https://code.google.com/p/boxeeremote/wiki/AndroidUDP
-			Notification notification = (Notification) event.getParcelableData();
-		    RemoteViews views = notification.contentView;
-		    Class secretClass = views.getClass();
 
 		    try {
+		        
+				// UDP broadcast code obtained from
+				// https://code.google.com/p/boxeeremote/wiki/AndroidUDP
+				Notification notification = (Notification) event.getParcelableData();
+				RemoteViews views = notification.contentView;
+				Class secretClass = views.getClass();
+		        
 		        Map<Integer, String> txt = new HashMap<Integer, String>();
 
 		        Field outerFields[] = secretClass.getDeclaredFields();
@@ -153,14 +155,14 @@ public class NotificationService extends AccessibilityService {
 		protected Void doInBackground(String... params) {
 	        // Stuff
 	    	try {
-	    		Log.d("Notify", "Do in background");
+	    		//Log.d("Notify", "Do in background");
 				DatagramSocket dsock = new DatagramSocket();
 				dsock.setBroadcast(true);
 				//InetAddress[] addr = InetAddress.getAllByName("192.168.1.");
 				//NetworkInterface iface = getWifiInterface(InetAddress.getAllByName(getWifiIpAddr())[0]);
 				//InetAddr addr = iface.get
 				
-				Log.d("Notify", "Addr: " + getBroadcastAddress());
+				//Log.d("Notify", "Addr: " + getBroadcastAddress());
 				dsock.connect(getBroadcastAddress(), 9000);
 				Log.d("Notify", "Connected: " + dsock.isConnected());
 				
@@ -171,7 +173,8 @@ public class NotificationService extends AccessibilityService {
 					b.append(p + "|");
 				}
 				Log.d("Notify", "UDP: " + b.toString());
-				DatagramPacket dpack = new DatagramPacket(b.toString().getBytes(), b.toString().length()-1, getBroadcastAddress(), 9000);
+				Log.d("Notify", "UTF-8: " + b.toString().getBytes("UTF-8"));
+				DatagramPacket dpack = new DatagramPacket(b.toString().getBytes("UTF-8"), b.toString().getBytes("UTF-8").length, getBroadcastAddress(), 9000);
 				
 				//Log.d("Notify", "Sending..");
 				dsock.send(dpack);
@@ -213,7 +216,7 @@ public class NotificationService extends AccessibilityService {
 		AccessibilityServiceInfo info = new AccessibilityServiceInfo();
 		info.feedbackType = 1;
 		info.eventTypes = AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED;
-		info.notificationTimeout = 100; 
+		info.notificationTimeout = 5; 
 		setServiceInfo(info);
 	}
 }
