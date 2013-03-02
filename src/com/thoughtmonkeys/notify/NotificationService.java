@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +42,7 @@ public class NotificationService extends AccessibilityService {
 			
 			String title = null;
 			String info = null;
-			String text = event.getText().toString();
+			String text = null; //event.getText().toString();
 			
 
 		    try {
@@ -91,25 +92,47 @@ public class NotificationService extends AccessibilityService {
 		                    txt.put(viewId, value.toString());
 		                    
 		                    Log.d("Notify", "txt: " + txt);
+		                    
+		                    // Set title
+				            for(int item :  new int[]{16908310, 2131230870, 2131231209}) {
+				            	if(txt.get(item) != null) {
+				            		title = txt.get(item);
+				            		//break;
+				            	}
+				            }
+				            		                    
+		                    // Set text
+			            	for(int item : new int[] {16908358, 2131230787, 2131231210}) {
+			            		if(txt.get(item) != null && !txt.get(item).equals('0')) {
+			            			text = txt.get(item);
+			            			//break;
+			            		}
+			            	}
+		                    
+		                    Log.d("Notify", "title: " + title + " " + "text: " + text);
+		                    
 		                }
+		                
+
+//			            info = txt.get(16909082);
+			    
+		            	
+		            	// Abort if we've filled both title and text
+		            	if(title != null && text != null) {
+		            		break;
+		            	}
 		            }
 
-//		            Log.d("Notify", "Raw: " + txt);
-//		            Log.d("Notify", "Title: " + txt.get(16908310));
-//		            Log.d("Notify", "Info: " + txt.get(16909082));
-//		            Log.d("Notify", "Text: " + txt.get(16908358));
-		            
-		            title = (txt.get(16908310) != null) ? txt.get(16908310) : txt.get(2131230870);
-		            info = txt.get(16909082);
-		            text = (txt.get(16908358) != null) ? txt.get(16908358) : txt.get(2131230787);
 		            
 		        }
+		        
+				
+				// Create socket
+				new Notify().execute(new String[] {title, text, event.getPackageName().toString()});
+		        
 		    } catch (Exception e) {
 		        e.printStackTrace();
 		    }
-			
-			// Create socket
-			new Notify().execute(new String[] {title, text, event.getPackageName().toString()});
 			
 		}
 	}
