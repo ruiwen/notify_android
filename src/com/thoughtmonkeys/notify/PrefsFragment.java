@@ -4,10 +4,14 @@ import java.util.Map;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class PrefsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
@@ -17,24 +21,44 @@ public class PrefsFragment extends PreferenceFragment implements OnSharedPrefere
 		super.onCreate(savedInstanceState);
 		
 		// Load preferences from XML
-		//addPreferencesFromResource(R.xml.preferences);
+		PreferenceManager prefMgr = getPreferenceManager();
+		prefMgr.setSharedPreferencesName("Allowed apps");
+		prefMgr.setSharedPreferencesMode(0);
 		
-//		Log.d("Notify", "Load Preferences");
+		addPreferencesFromResource(R.xml.preferences);
 		
-//		PreferenceCategory targetCategory = (PreferenceCategory)findPreference("Allowed apps");
-//		// Add the allowed apps
+		Log.d("Notify", "Load Preferences");
+		
+		PreferenceCategory targetCategory = (PreferenceCategory)findPreference("Allowed apps");
+		// Add the allowed apps
 //		SharedPreferences prefs = getActivity().getSharedPreferences("Allowed apps", 0);
-//		Log.d("Notify", "Preferences: " + prefs.getAll().entrySet());
-//		for(Map.Entry<String,?> entry : prefs.getAll().entrySet()){
-//			CheckBoxPreference cbP = new CheckBoxPreference(getActivity());
-//			
-//			Log.d("Notify", "app: " + entry.getKey());
-//			cbP.setTitle(entry.getKey());
-//			cbP.setKey(entry.getKey());
-//			cbP.setChecked((Boolean) entry.getValue());
-//
-//			targetCategory.addPreference(cbP);
-//		}
+		SharedPreferences prefs = prefMgr.getSharedPreferences();
+		Log.d("Notify", "Preferences: " + prefs.getAll().entrySet());
+		
+		PackageManager pm = getActivity().getPackageManager();
+		
+		for(Map.Entry<String,?> entry : prefs.getAll().entrySet()){
+			CheckBoxPreference cbP = new CheckBoxPreference(getActivity());
+
+			String key = entry.getKey();
+			ApplicationInfo appInfo;
+			try {
+				appInfo = pm.getApplicationInfo(key, PackageManager.GET_META_DATA);
+				String appName = (String) pm.getApplicationLabel(appInfo);
+
+				Log.d("Notify", "app: " + entry.getKey());
+				cbP.setTitle(appName);
+				cbP.setKey(entry.getKey());
+				cbP.setChecked((Boolean) entry.getValue());
+
+				targetCategory.addPreference(cbP);
+			
+			} catch (NameNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
 	}
 	
 

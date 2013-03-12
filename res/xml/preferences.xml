@@ -3,7 +3,8 @@
 	
 	<PreferenceCategory
 		android:key="Allowed apps"
-		android:title="@string/pref_apps_notify" />
+		android:title="@string/pref_apps_notify"
+		android:summary="@string/pref_apps_notify_summary" />
 	
 	
 </PreferenceScreen>

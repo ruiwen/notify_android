@@ -19,9 +19,9 @@ public class NotifyMainActivity extends Activity implements OnSharedPreferenceCh
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.notify_main);
 		
-		getFragmentManager().beginTransaction()
-			.replace(R.id.prefsFragment, new PrefsFragment())
-			.commit();
+//		getFragmentManager().beginTransaction()
+//			.replace(R.id.prefsFragment, new PrefsFragment())
+//			.commit();
 			
 	}
 

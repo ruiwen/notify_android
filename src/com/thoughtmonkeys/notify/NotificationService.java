@@ -157,33 +157,35 @@ public class NotificationService extends AccessibilityService {
 
 				
 				boolean send = true;
+				String packageName = event.getPackageName().toString();
 				// Set/check preferences
 				try {
 					SharedPreferences pref = getSharedPreferences("Allowed apps", 0);
 					//SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
 					SharedPreferences.Editor prefEdit = pref.edit();
-					PackageManager pm = getPackageManager();
-					ApplicationInfo appInfo = pm.getApplicationInfo(event.getPackageName().toString(), PackageManager.GET_META_DATA);
-					String appName = (String) pm.getApplicationLabel(appInfo);
+//					PackageManager pm = getPackageManager();
+//					ApplicationInfo appInfo = pm.getApplicationInfo(event.getPackageName().toString(), PackageManager.GET_META_DATA);
+//					String appName = (String) pm.getApplicationLabel(appInfo);
 					
-					if(pref.contains(appName)) {
-						Log.d("Notify", "Preference for " + appName + ": " + pref.getBoolean(appName, true));
-						send = pref.getBoolean(appName, true);
+					
+					if(pref.contains(packageName)) {
+						Log.d("Notify", "Preference for " + packageName + ": " + pref.getBoolean(packageName, true));
+						send = pref.getBoolean(packageName, true);
 					}
 					else {
-						Log.d("Notify", "Preference for " + appName + " not found");
-						prefEdit.putBoolean(appName, true);
+						Log.d("Notify", "Preference for " + packageName + " not found");
+						prefEdit.putBoolean(packageName, true);
 						prefEdit.apply();
 					}
 				}
-				catch (NameNotFoundException e) { e.printStackTrace(); }
+				catch (Exception e) { e.printStackTrace(); }
 				
 				if(send) {
 					// Create socket
-					new Notify().execute(new String[] {title, text, event.getPackageName().toString()});
+					new Notify().execute(new String[] {title, text, packageName.toString()});
 				}
 				else {
-					Log.d("Notify", "Send aborted by preference: " + event.getPackageName());
+					Log.d("Notify", "Send aborted by preference: " + packageName);
 				}
 		        
 		    } catch (Exception e) {
