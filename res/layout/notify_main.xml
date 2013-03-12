@@ -35,4 +35,10 @@
 		android:onClick="btnNotifyClick"
 		android:text="Notification" />
 
+	<fragment class="com.thoughtmonkeys.notify.PrefsFragment" 
+		android:id="@+id/prefsFragment"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content" 
+		android:layout_below="@+id/btnNotifcation" />
+	
 </RelativeLayout>

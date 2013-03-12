@@ -18,10 +18,18 @@ import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.Notification;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.RemoteViews;
 
@@ -43,16 +51,22 @@ public class NotificationService extends AccessibilityService {
 			String title = null;
 			String info = null;
 			String text = null; //event.getText().toString();
-			
 
+			
 		    try {
 		        
 				// UDP broadcast code obtained from
 				// https://code.google.com/p/boxeeremote/wiki/AndroidUDP
 				Notification notification = (Notification) event.getParcelableData();
+				Log.d("Notify", "notification: " + notification);
+				Log.d("Notify", "tickerText: " + notification.tickerText);
+				
+						
 				RemoteViews views = notification.contentView;
+//				RemoteViews views = notification.tickerView;
 				Class secretClass = views.getClass();
 		        
+			        
 		        Map<Integer, String> txt = new HashMap<Integer, String>();
 
 		        Field outerFields[] = secretClass.getDeclaredFields();
@@ -64,8 +78,8 @@ public class NotificationService extends AccessibilityService {
 	                Object value = null;
 	                Integer type = null;
 	                Integer viewId = null;
-
-		            ArrayList<Object> actions = (ArrayList<Object>) outerFields[i].get(views);
+	                
+	                ArrayList<Object> actions = (ArrayList<Object>) outerFields[i].get(views);
 		            for (Object action : actions) {
 		                Field innerFields[] = action.getClass().getDeclaredFields();
 
@@ -75,6 +89,7 @@ public class NotificationService extends AccessibilityService {
 		                    try {
 			                    if (field.getName().equals("value")) {
 			                        value = field.get(action);
+			                        Log.d("Notify", "value: " + value.toString());
 			                    } 
 			                    if (field.getName().equals("type")) {
 			                        type = field.getInt(action);
@@ -84,30 +99,44 @@ public class NotificationService extends AccessibilityService {
 			                    }
 		                    
 		                    }
-		                    catch(Exception e) { /*e.printStackTrace();*/ }
+		                    catch(Exception e) { e.printStackTrace(); }
 
 		                }
 
-		                if (type != null /* && (type == 9 || type == 10)*/) {
-		                    txt.put(viewId, value.toString());
+		                if (type != null && (type == 9 || type == 10)) {
 		                    
-		                    Log.d("Notify", "txt: " + txt);
-		                    
-		                    // Set title
-				            for(int item :  new int[]{16908310, 2131230870, 2131231209}) {
-				            	if(txt.get(item) != null) {
-				            		title = txt.get(item);
-				            		//break;
+
+		                	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
+		                			Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+			                    txt.put(viewId, value.toString());
+			                    
+			                    // Set title
+					            for(int item :  new int[]{16908310, 2131230870, 2131231209}) {
+					            	if(txt.get(item) != null) {
+					            		title = txt.get(item);
+					            		//break;
+					            	}
+					            }
+					            		                    
+			                    // Set text
+				            	for(int item : new int[] {16908358, 2131230787, 2131231210}) {
+				            		if(txt.get(item) != null && !txt.get(item).equals('0')) {
+				            			text = txt.get(item);
+				            			//break;
+				            		}
 				            	}
-				            }
-				            		                    
-		                    // Set text
-			            	for(int item : new int[] {16908358, 2131230787, 2131231210}) {
-			            		if(txt.get(item) != null && !txt.get(item).equals('0')) {
-			            			text = txt.get(item);
-			            			//break;
-			            		}
-			            	}
+		                	}
+		                	
+		                	else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+		                		
+	                			if(title == null) {
+	                				title = value.toString();
+	                			}
+	                			
+	                			else if(text == null) {
+	                				text = value.toString();
+	                			}
+		                	}
 		                    
 		                    Log.d("Notify", "title: " + title + " " + "text: " + text);
 		                    
@@ -125,10 +154,37 @@ public class NotificationService extends AccessibilityService {
 
 		            
 		        }
-		        
+
 				
-				// Create socket
-				new Notify().execute(new String[] {title, text, event.getPackageName().toString()});
+				boolean send = true;
+				// Set/check preferences
+				try {
+					SharedPreferences pref = getSharedPreferences("Allowed apps", 0);
+					//SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+					SharedPreferences.Editor prefEdit = pref.edit();
+					PackageManager pm = getPackageManager();
+					ApplicationInfo appInfo = pm.getApplicationInfo(event.getPackageName().toString(), PackageManager.GET_META_DATA);
+					String appName = (String) pm.getApplicationLabel(appInfo);
+					
+					if(pref.contains(appName)) {
+						Log.d("Notify", "Preference for " + appName + ": " + pref.getBoolean(appName, true));
+						send = pref.getBoolean(appName, true);
+					}
+					else {
+						Log.d("Notify", "Preference for " + appName + " not found");
+						prefEdit.putBoolean(appName, true);
+						prefEdit.apply();
+					}
+				}
+				catch (NameNotFoundException e) { e.printStackTrace(); }
+				
+				if(send) {
+					// Create socket
+					new Notify().execute(new String[] {title, text, event.getPackageName().toString()});
+				}
+				else {
+					Log.d("Notify", "Send aborted by preference: " + event.getPackageName());
+				}
 		        
 		    } catch (Exception e) {
 		        e.printStackTrace();
