@@ -160,7 +160,7 @@ public class NotificationService extends AccessibilityService {
 				String packageName = event.getPackageName().toString();
 				// Set/check preferences
 				try {
-					SharedPreferences pref = getSharedPreferences("Allowed apps", 0);
+					SharedPreferences pref = getSharedPreferences(getString(R.string.pref_file), 0);
 					//SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
 					SharedPreferences.Editor prefEdit = pref.edit();
 //					PackageManager pm = getPackageManager();

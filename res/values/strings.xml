@@ -5,4 +5,6 @@
 	<string name="action_settings">Settings</string>
 	<string name="hello_world">Hello world!</string>
 	<string name="accessibility_service_desc">Retrieves notifications and sends them to the desktop</string>
+	
+	<string name="pref_file">notify_options</string>
 </resources>

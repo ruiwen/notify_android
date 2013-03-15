@@ -29,7 +29,7 @@ public class PrefsFragment extends PreferenceFragment implements OnSharedPrefere
 		
 		Log.d("Notify", "Load Preferences");
 		
-		PreferenceCategory targetCategory = (PreferenceCategory)findPreference("Allowed apps");
+		PreferenceCategory targetCategory = (PreferenceCategory)findPreference(getActivity().getString(R.string.pref_file));
 		// Add the allowed apps
 //		SharedPreferences prefs = getActivity().getSharedPreferences("Allowed apps", 0);
 		SharedPreferences prefs = prefMgr.getSharedPreferences();
