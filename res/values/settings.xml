@@ -8,6 +8,11 @@
 	
 	<string name="pref_file">notify_options</string>
 	
+	<string name="pref_password">Password</string>
+	<string name="pref_password_desc">Set a password</string>
+	<string name="pref_password_summary">Passwords are used to ensure that no one can snoop on the notifications passing between your phone and the browser.</string>
+	<string name="pref_password_title">Password</string>
+	
 	<string name="pref_apps">Allowed apps</string>
 	<string name="pref_apps_notify">Allowed apps</string>
 	<string name="pref_apps_notify_summary">Select which apps can forward notifications</string>
