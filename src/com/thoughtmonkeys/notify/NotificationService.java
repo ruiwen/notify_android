@@ -42,12 +42,22 @@ public class NotificationService extends AccessibilityService {
 	InetAddress cAddr = null;
 
 	@Override
-	public void onAccessibilityEvent(AccessibilityEvent event) {
+	protected void onServiceConnected() {
+		AccessibilityServiceInfo info = new AccessibilityServiceInfo();
+		info.feedbackType = 1;
+		info.eventTypes = AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED;
+		info.notificationTimeout = 5; 
+		setServiceInfo(info);
 
 		pref = getSharedPreferences(getString(R.string.pref_file), 0);
-
 		res = getResources();
 		defaultPort = res.getInteger(R.integer.port_default);
+
+	}
+
+	@Override
+	public void onAccessibilityEvent(AccessibilityEvent event) {
+
 
 		// TODO Auto-generated method stub
 		// Log.d("Notify", "Got Event: " + event);
@@ -420,14 +430,6 @@ public class NotificationService extends AccessibilityService {
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	protected void onServiceConnected() {
-		AccessibilityServiceInfo info = new AccessibilityServiceInfo();
-		info.feedbackType = 1;
-		info.eventTypes = AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED;
-		info.notificationTimeout = 5; 
-		setServiceInfo(info);
-	}
+	
 }
 
