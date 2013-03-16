@@ -28,6 +28,8 @@ import android.widget.RemoteViews;
 
 public class NotificationService extends AccessibilityService {
 
+	SharedPreferences pref = null;
+
 	Resources res = null;
 	int highPort = 0;  // High port, if we've been told of one 
 	int defaultPort = 0; // Default port
@@ -35,6 +37,8 @@ public class NotificationService extends AccessibilityService {
 
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
+
+		pref = getSharedPreferences(getString(R.string.pref_file), 0);
 
 		res = getResources();
 		defaultPort = res.getInteger(R.integer.port_default);
@@ -162,8 +166,8 @@ public class NotificationService extends AccessibilityService {
 				String packageName = event.getPackageName().toString();
 				// Set/check preferences
 				try {
-					SharedPreferences pref = getSharedPreferences(getString(R.string.pref_file), 0);
-					//SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+				
+					// Get a preference editor
 					SharedPreferences.Editor prefEdit = pref.edit();
 //					PackageManager pm = getPackageManager();
 //					ApplicationInfo appInfo = pm.getApplicationInfo(event.getPackageName().toString(), PackageManager.GET_META_DATA);
