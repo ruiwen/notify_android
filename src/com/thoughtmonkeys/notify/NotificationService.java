@@ -1,15 +1,20 @@
 package com.thoughtmonkeys.notify;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
@@ -21,6 +26,7 @@ import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.util.Base64;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.RemoteViews;
@@ -288,77 +294,88 @@ public class NotificationService extends AccessibilityService {
 				
 				
 				// Parse params
-				StringBuilder out = new StringBuilder();
-				out.append(res.getString(R.string.header_tag) + "|");
+				StringBuilder ob = new StringBuilder();
+				ob.append(res.getString(R.string.header_tag) + "|");
 				for(String p : params) {
-					out.append(p + "|");
+					ob.append(p + "|");
 				}
 				
-				// TODO: XOR output string
+				// XOR output string
+				Log.d("Notify", "out: " + ob.toString());
+				String key = pref.getString(res.getString(R.string.pwd_key), ""); Log.d("Notify", "key: " + key);
+				
+				// Hash the key
+				MessageDigest hash = MessageDigest.getInstance("MD5");
+				hash.update(key.getBytes("UTF-8"));
+				String hex = new BigInteger(1, hash.digest()).toString(16);
+				Log.d("Notify", "hash: " + hex);
+				byte[] munged = munge(ob.toString(), hex); Log.d("Notify", "munged: " + munged.toString());
+				byte[] out = Base64.encode(munged, Base64.NO_WRAP); Log.d("Notify", "out: " + out.toString());
 
 				DatagramPacket outpack = new DatagramPacket(
-                        out.toString().getBytes("UTF-8"), 
-                        out.toString().getBytes("UTF-8").length, 
-                        cAddr, highPort);
+                        out, 
+                        out.length, 
+                        getBroadcastAddress(), defaultPort);
 				
 				
 				Log.d("Notify", "Preparing to send");
-				Log.d("Notify", "highPort: " + highPort);
 
-				if(highPort > 0 && cAddr != null) {
-					// Looks like we have what we need, let's send
-					dsock.send(outpack);
-				}
-				else { // No high port, let's ask for one
-				
-					StringBuilder b = new StringBuilder();
-					b.append(res.getString(R.string.header_tag) + "|");
-					b.append(res.getString(R.string.handshake_tag));
-				
-					// TODO: XOR output string
-				
-					Log.d("Notify", "Sending handshake");
-					Log.d("Notify", "Handshake: " + b.toString());
-				
-					DatagramPacket dpack = new DatagramPacket(
-					                               b.toString().getBytes("UTF-8"),
-					                               b.toString().getBytes("UTF-8").length,
-					                               getBroadcastAddress(), defaultPort);
-					
-					// Set the timeout
-					dsock.setSoTimeout(5000);
-									
-					// Send the handshake
-					dsock.send(dpack);
+				dsock.send(outpack);
 
-					
-					// Craft an empty DatagramPacket and wait for a reply
-					dsock.setReceiveBufferSize(400);
-					byte[] data = new byte[400];
-					DatagramPacket rcvpack = new DatagramPacket(data, data.length);
-					dsock.receive(rcvpack);
-					
-					// Process the output - export a port number
-					String response = (new String(rcvpack.getData(), "UTF-8")).trim(); 
-					
-					
-					// TODO: XOR incoming string
-					String[] items = response.split("\\|"); 
-					if(items[0].equals(res.getString(R.string.header_tag))) {
-						// We've got a header tag, so parse the highPort
-						highPort = Integer.parseInt(items[1]);
-					
-						// Set the client address
-						cAddr = rcvpack.getAddress();
-					
-						// Now that we have the highPort, we can send the notification
-						Log.d("Notify", "Sending for real");
-						outpack.setAddress(cAddr);
-						outpack.setPort(highPort);
-						dsock.send(outpack);
-					}
-				
-				}
+//				if(highPort > 0 && cAddr != null) {
+//					// Looks like we have what we need, let's send
+//					dsock.send(outpack);
+//				}
+//				else { // No high port, let's ask for one
+//				
+//					StringBuilder b = new StringBuilder();
+//					b.append(res.getString(R.string.header_tag) + "|");
+//					b.append(res.getString(R.string.handshake_tag));
+//				
+//					// TODO: XOR output string
+//				
+//					Log.d("Notify", "Sending handshake");
+//					Log.d("Notify", "Handshake: " + b.toString());
+//				
+//					DatagramPacket dpack = new DatagramPacket(
+//					                               b.toString().getBytes("UTF-8"),
+//					                               b.toString().getBytes("UTF-8").length,
+//					                               getBroadcastAddress(), defaultPort);
+//					
+//					// Set the timeout
+//					dsock.setSoTimeout(5000);
+//									
+//					// Send the handshake
+//					dsock.send(dpack);
+//
+//					
+//					// Craft an empty DatagramPacket and wait for a reply
+//					dsock.setReceiveBufferSize(400);
+//					byte[] data = new byte[400];
+//					DatagramPacket rcvpack = new DatagramPacket(data, data.length);
+//					dsock.receive(rcvpack);
+//					
+//					// Process the output - export a port number
+//					String response = (new String(rcvpack.getData(), "UTF-8")).trim(); 
+//					
+//					
+//					// TODO: XOR incoming string
+//					String[] items = response.split("\\|"); 
+//					if(items[0].equals(res.getString(R.string.header_tag))) {
+//						// We've got a header tag, so parse the highPort
+//						highPort = Integer.parseInt(items[1]);
+//					
+//						// Set the client address
+//						cAddr = rcvpack.getAddress();
+//					
+//						// Now that we have the highPort, we can send the notification
+//						Log.d("Notify", "Sending for real");
+//						outpack.setAddress(cAddr);
+//						outpack.setPort(highPort);
+//						dsock.send(outpack);
+//					}
+//				
+//				}
 				
 			} catch (SocketException e) {
 				Log.d("Notify", "SocketException: " + e);
@@ -378,6 +395,9 @@ public class NotificationService extends AccessibilityService {
 				// perform the request again on the next notification
 				cAddr = null;
 				highPort = 0;
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			finally {
 			
