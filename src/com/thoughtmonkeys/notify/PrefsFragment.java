@@ -22,7 +22,7 @@ public class PrefsFragment extends PreferenceFragment implements OnSharedPrefere
 		
 		// Load preferences from XML
 		PreferenceManager prefMgr = getPreferenceManager();
-		prefMgr.setSharedPreferencesName("Allowed apps");
+		prefMgr.setSharedPreferencesName(getActivity().getString(R.string.pref_file));
 		prefMgr.setSharedPreferencesMode(0);
 		
 		addPreferencesFromResource(R.xml.preferences);
