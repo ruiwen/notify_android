@@ -1,5 +1,7 @@
 package com.thoughtmonkeys.notify;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -19,6 +21,20 @@ public class NotifyMainActivity extends Activity implements OnSharedPreferenceCh
 //			.replace(R.id.prefsFragment, new PrefsFragment())
 //			.commit();
 			
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		
+		EasyTracker.getInstance().activityStart(this);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		
+		EasyTracker.getInstance().activityStop(this);
 	}
 
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {

@@ -31,8 +31,14 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.RemoteViews;
 
+import com.google.analytics.tracking.android.GoogleAnalytics;
+import com.google.analytics.tracking.android.Tracker;
 
 public class NotificationService extends AccessibilityService {
+
+	// GA tracking
+	private Tracker mGaTracker;
+	private GoogleAnalytics mGaInstance;
 
 	SharedPreferences pref = null;
 
@@ -48,6 +54,10 @@ public class NotificationService extends AccessibilityService {
 		info.eventTypes = AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED;
 		info.notificationTimeout = 5; 
 		setServiceInfo(info);
+		
+		// Initialise other bits
+		mGaInstance = GoogleAnalytics.getInstance(this);
+		mGaTracker = mGaInstance.getTracker("UA-39360545-1");
 
 		pref = getSharedPreferences(getString(R.string.pref_file), 0);
 		res = getResources();
@@ -73,6 +83,9 @@ public class NotificationService extends AccessibilityService {
 			String title = null;
 			String info = null;
 			String text = null; //event.getText().toString();
+
+			// Track the event in GA
+			mGaTracker.sendEvent("notification", event.getPackageName().toString(), "", 1L);
 
 			
 		    try {
