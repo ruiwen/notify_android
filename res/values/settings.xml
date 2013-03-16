@@ -8,6 +8,9 @@
 	
 	<string name="pref_file">notify_options</string>
 	
+	<string name="pref_apps">Allowed apps</string>
+	<string name="pref_apps_notify">Allowed apps</string>
+	<string name="pref_apps_notify_summary">Select which apps can forward notifications</string>
 	
 	<integer name="port_default">9000</integer>	
 	<string name="header_tag">NOTIFY</string>
