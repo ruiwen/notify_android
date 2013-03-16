@@ -44,28 +44,4 @@ public class NotifyMainActivity extends Activity implements OnSharedPreferenceCh
 		return true;
 	}
 
-
-	// Notify Button
-	public void btnNotifyClick(View v) {
-		EditText txtNotification = (EditText)findViewById(R.id.txtNotification);
-
-		NotificationCompat.Builder mBuilder =
-		        new NotificationCompat.Builder(this)
-		        .setSmallIcon(R.drawable.ic_launcher)
-		        .setContentTitle("My notification")
-		        .setContentText(txtNotification.getText().toString())
-		        .setTicker(txtNotification.getText().toString());
-		
-		Log.d("Notify", txtNotification.getText().toString());
-		
-		NotificationManager mNotificationManager =
-			    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		int mId = 0;
-		// mId allows you to update the notification later on.
-		mNotificationManager.notify(mId, mBuilder.build());
-
-		Log.d("Notify", "Notified");
-		
-	}
-
 }

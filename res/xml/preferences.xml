@@ -2,9 +2,25 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 	
 	<PreferenceCategory
-		android:key="@string/pref_file"
+		android:key="@string/pref_password"
+		android:title="@string/pref_password_desc"
+		android:summary="@string/pref_password_summary">
+		
+		<EditTextPreference
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:inputType="text"
+			android:key="@string/pwd_key"
+			android:maxLines="1"
+			android:selectAllOnFocus="true"
+			android:singleLine="true"
+			android:title="@string/pref_password_title" />
+					
+	</PreferenceCategory>
+	
+	<PreferenceCategory
+		android:key="@string/pref_apps"
 		android:title="@string/pref_apps_notify"
 		android:summary="@string/pref_apps_notify_summary" />
-	
 	
 </PreferenceScreen>

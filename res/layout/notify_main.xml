@@ -8,37 +8,9 @@
 	android:paddingTop="@dimen/activity_vertical_margin"
 	tools:context=".SettingsActivity" >
 
-	<TextView
-		android:id="@+id/textView1"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/hello_world" />
-
-	<EditText
-		android:id="@+id/txtNotification"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignLeft="@+id/textView1"
-		android:layout_below="@+id/textView1"
-		android:ems="10" >
-
-		<requestFocus />
-	</EditText>
-
-	<Button
-		android:id="@+id/btnNotifcation"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignLeft="@+id/txtNotification"
-		android:layout_below="@+id/txtNotification"
-		android:layout_marginTop="18dp"
-		android:onClick="btnNotifyClick"
-		android:text="Notification" />
-
 	<fragment class="com.thoughtmonkeys.notify.PrefsFragment" 
 		android:id="@+id/prefsFragment"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content" 
-		android:layout_below="@+id/btnNotifcation" />
+		android:layout_height="wrap_content" />
 	
 </RelativeLayout>
