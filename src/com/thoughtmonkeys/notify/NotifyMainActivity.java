@@ -1,16 +1,12 @@
 package com.thoughtmonkeys.notify;
 
 import android.app.Activity;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Menu;
-import android.view.View;
-import android.widget.EditText;
+
 
 public class NotifyMainActivity extends Activity implements OnSharedPreferenceChangeListener {
 
