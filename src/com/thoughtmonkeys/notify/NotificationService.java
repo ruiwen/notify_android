@@ -1,42 +1,44 @@
 package com.thoughtmonkeys.notify;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import java.lang.Void;
-import java.lang.reflect.Field;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.Notification;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Resources;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.RemoteViews;
 
+
 public class NotificationService extends AccessibilityService {
+
+	Resources res = null;
+	int highPort = 0;  // High port, if we've been told of one 
+	int defaultPort = 0; // Default port
+	InetAddress cAddr = null;
 
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
+
+		res = getResources();
+		defaultPort = res.getInteger(R.integer.port_default);
+
 		// TODO Auto-generated method stub
 		// Log.d("Notify", "Got Event: " + event);
 		final int eventType = event.getEventType();
@@ -232,35 +234,102 @@ public class NotificationService extends AccessibilityService {
 		    return InetAddress.getByAddress(quads);
 		}
 	
+		protected InetAddress getInetAddress() throws IOException {
+		    WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+		    DhcpInfo dhcp = wifi.getDhcpInfo();
+		    // handle null somehow
+
+		    int broadcast = dhcp.ipAddress;
+		    byte[] quads = new byte[4];
+		    for (int k = 0; k < 4; k++)
+		      quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
+		    return InetAddress.getByAddress(quads);
+		}
+	
 		@Override
 		protected Void doInBackground(String... params) {
-	        // Stuff
+	        
+	        DatagramSocket dsock = null;
+	        
+			// Stuff
 	    	try {
 	    		//Log.d("Notify", "Do in background");
-				DatagramSocket dsock = new DatagramSocket();
+	    		dsock = new DatagramSocket(defaultPort, getInetAddress());
 				dsock.setBroadcast(true);
-				//InetAddress[] addr = InetAddress.getAllByName("192.168.1.");
-				//NetworkInterface iface = getWifiInterface(InetAddress.getAllByName(getWifiIpAddr())[0]);
-				//InetAddr addr = iface.get
 				
-				//Log.d("Notify", "Addr: " + getBroadcastAddress());
-				dsock.connect(getBroadcastAddress(), 9000);
-				Log.d("Notify", "Connected: " + dsock.isConnected());
 				
 				// Parse params
-				//Log.d("Notify", "Parsing..");
-				StringBuilder b = new StringBuilder();
+				StringBuilder out = new StringBuilder();
+				out.append(res.getString(R.string.header_tag) + "|");
 				for(String p : params) {
-					b.append(p + "|");
+					out.append(p + "|");
 				}
-				Log.d("Notify", "UDP: " + b.toString());
-				Log.d("Notify", "UTF-8: " + b.toString().getBytes("UTF-8"));
-				DatagramPacket dpack = new DatagramPacket(b.toString().getBytes("UTF-8"), b.toString().getBytes("UTF-8").length, getBroadcastAddress(), 9000);
 				
-				//Log.d("Notify", "Sending..");
-				dsock.send(dpack);
+				// TODO: XOR output string
+
+				DatagramPacket outpack = new DatagramPacket(
+                        out.toString().getBytes("UTF-8"), 
+                        out.toString().getBytes("UTF-8").length, 
+                        cAddr, highPort);
 				
-				dsock.close();
+				
+				Log.d("Notify", "Preparing to send");
+				Log.d("Notify", "highPort: " + highPort);
+
+				if(highPort > 0 && cAddr != null) {
+					// Looks like we have what we need, let's send
+					dsock.send(outpack);
+				}
+				else { // No high port, let's ask for one
+				
+					StringBuilder b = new StringBuilder();
+					b.append(res.getString(R.string.header_tag) + "|");
+					b.append(res.getString(R.string.handshake_tag));
+				
+					// TODO: XOR output string
+				
+					Log.d("Notify", "Sending handshake");
+					Log.d("Notify", "Handshake: " + b.toString());
+				
+					DatagramPacket dpack = new DatagramPacket(
+					                               b.toString().getBytes("UTF-8"),
+					                               b.toString().getBytes("UTF-8").length,
+					                               getBroadcastAddress(), defaultPort);
+					
+					// Set the timeout
+					dsock.setSoTimeout(5000);
+									
+					// Send the handshake
+					dsock.send(dpack);
+
+					
+					// Craft an empty DatagramPacket and wait for a reply
+					dsock.setReceiveBufferSize(400);
+					byte[] data = new byte[400];
+					DatagramPacket rcvpack = new DatagramPacket(data, data.length);
+					dsock.receive(rcvpack);
+					
+					// Process the output - export a port number
+					String response = (new String(rcvpack.getData(), "UTF-8")).trim(); 
+					
+					
+					// TODO: XOR incoming string
+					String[] items = response.split("\\|"); 
+					if(items[0].equals(res.getString(R.string.header_tag))) {
+						// We've got a header tag, so parse the highPort
+						highPort = Integer.parseInt(items[1]);
+					
+						// Set the client address
+						cAddr = rcvpack.getAddress();
+					
+						// Now that we have the highPort, we can send the notification
+						Log.d("Notify", "Sending for real");
+						outpack.setAddress(cAddr);
+						outpack.setPort(highPort);
+						dsock.send(outpack);
+					}
+				
+				}
 				
 			} catch (SocketException e) {
 				Log.d("Notify", "SocketException: " + e);
@@ -274,6 +343,17 @@ public class NotificationService extends AccessibilityService {
 				Log.d("Notify", "IOException: " + e);
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				
+				// Something likely went wrong with the sending
+				// reset the target address and high port, and
+				// perform the request again on the next notification
+				cAddr = null;
+				highPort = 0;
+			}
+			finally {
+			
+				// Close the socket on each run
+				dsock.close();
 			}
 			
 			return null;
