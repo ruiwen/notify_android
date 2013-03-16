@@ -169,10 +169,6 @@ public class NotificationService extends AccessibilityService {
 				
 					// Get a preference editor
 					SharedPreferences.Editor prefEdit = pref.edit();
-//					PackageManager pm = getPackageManager();
-//					ApplicationInfo appInfo = pm.getApplicationInfo(event.getPackageName().toString(), PackageManager.GET_META_DATA);
-//					String appName = (String) pm.getApplicationLabel(appInfo);
-					
 					
 					if(pref.contains(packageName)) {
 						Log.d("Notify", "Preference for " + packageName + ": " + pref.getBoolean(packageName, true));
