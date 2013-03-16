@@ -222,6 +222,35 @@ public class NotificationService extends AccessibilityService {
 //			return NetworkInterface.getByInetAddress(addr);
 //		}	
 
+		protected byte[] munge(String str, String key) {
+			// Returns the munged string, or null on error
+
+			byte[] inStr;
+			byte[] keyStr;
+			byte[] out = null;
+			try {
+				inStr = str.getBytes("UTF-8");
+				keyStr = key.getBytes("UTF-8");
+				
+			    out = new byte[inStr.length];
+			    for (int i = 0; i < inStr.length; i++) {
+			        out[i] = (byte) (inStr[i] ^ keyStr[i%keyStr.length]);
+			    }
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				
+				return null;
+			} catch (ArithmeticException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				
+				// pass
+				return null;
+			}
+			return out;
+		}
+
 		protected InetAddress getBroadcastAddress() throws IOException {
 		    WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		    DhcpInfo dhcp = wifi.getDhcpInfo();
