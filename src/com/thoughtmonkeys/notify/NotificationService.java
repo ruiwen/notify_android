@@ -210,6 +210,17 @@ public class NotificationService extends AccessibilityService {
 						prefEdit.putBoolean(packageName, true);
 						prefEdit.apply();
 					}
+					
+					// Check wifi connectivity
+					// If it isn't block the send
+					if(!isWifiConnected()) { 
+						send = false; 
+					
+						// Track the preference block in GA
+						mGaTracker.sendEvent("notification_blocked_wifi", packageName, "", 1L);
+						
+						Log.d("Notify", "Send aborted by lack of wifi: " + packageName);
+					} 
 				}
 				catch (Exception e) { e.printStackTrace(); }
 				
