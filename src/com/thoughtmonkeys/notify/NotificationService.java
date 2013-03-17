@@ -22,7 +22,9 @@ import android.app.Notification;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -437,6 +439,15 @@ public class NotificationService extends AccessibilityService {
 //	         mImageView.setImageBitmap(result);
 //	     }
 	 }
+
+	// Utils
+	
+	protected boolean isWifiConnected() {
+		// Tells us if Wifi is connected and is able to form connections
+		ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+		NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		return mWifi.isConnected();
+	}
 
 	@Override
 	public void onInterrupt() {
