@@ -204,6 +204,13 @@ public class NotificationService extends AccessibilityService {
 					if(pref.contains(packageName)) {
 						Log.d("Notify", "Preference for " + packageName + ": " + pref.getBoolean(packageName, true));
 						send = pref.getBoolean(packageName, true);
+						
+						if(!send) {
+							// Track the preference block in GA
+							mGaTracker.sendEvent("notification_blocked_preference", packageName, "", 1L);
+							
+							Log.d("Notify", "Send aborted by preference: " + packageName);
+						}
 					}
 					else {
 						Log.d("Notify", "Preference for " + packageName + " not found");
@@ -227,9 +234,6 @@ public class NotificationService extends AccessibilityService {
 				if(send) {
 					// Create socket
 					new Notify().execute(new String[] {title, text, packageName.toString()});
-				}
-				else {
-					Log.d("Notify", "Send aborted by preference: " + packageName);
 				}
 		        
 		    } catch (Exception e) {
