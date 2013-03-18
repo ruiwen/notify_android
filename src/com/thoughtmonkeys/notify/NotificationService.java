@@ -336,6 +336,7 @@ public class NotificationService extends AccessibilityService {
 				
 				// Parse params
 				StringBuilder ob = new StringBuilder();
+				ob.append(genSalt() + "|");
 				ob.append(res.getString(R.string.header_tag) + "|");
 				for(String p : params) {
 					ob.append(p + "|");
