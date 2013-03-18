@@ -14,6 +14,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 
 import android.accessibilityservice.AccessibilityService;
@@ -462,6 +463,24 @@ public class NotificationService extends AccessibilityService {
 		ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 		NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 		return mWifi.isConnected();
+	}
+
+
+	protected String genSalt() throws NoSuchAlgorithmException {
+		
+		// Define a list of allowed characters
+		final String ALLOWED_CHARACTERS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+		// Generates a random-length (between 1-13 chars) salt
+		Random r = new Random();
+		int length = r.nextInt(12) + 1;  // +1 so that length will never be 0
+				
+		char[] genSalt = new char[length];
+		for(int i = 0; i < length; i++) {
+			genSalt[i] = ALLOWED_CHARACTERS.charAt(r.nextInt(ALLOWED_CHARACTERS.length()));
+		}
+		
+		return new String(genSalt);
 	}
 
 	@Override
