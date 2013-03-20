@@ -21,6 +21,7 @@
 	<PreferenceCategory
 		android:key="@string/pref_apps"
 		android:title="@string/pref_apps_notify"
-		android:summary="@string/pref_apps_notify_summary" />
+		android:summary="@string/pref_apps_notify_summary"
+		android:layout="@layout/preference_category_summary" />
 	
 </PreferenceScreen>
