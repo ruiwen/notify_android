@@ -8,6 +8,13 @@
 	
 	<string name="pref_file">notify_options</string>
 	
+	<string name="pref_accessibility">Accessibility Settings</string>
+	<string name="pref_accessibility_summary">Enable the Notify accessibility service to begin forwarding notifications to your desktop.</string>
+	<string name="pref_accessibility_button">Go to Accessibility settings</string>
+	<string name="pref_accessibility_status">Accessibility service is: </string>
+	<string name="pref_accessibility_enabled">On</string>
+	<string name="pref_accessibility_disabled">Off</string>
+	
 	<string name="pref_password">Password</string>
 	<string name="pref_password_desc">Set a password</string>
 	<string name="pref_password_summary">Passwords ensure that notifications passed between your phone and desktop are secure. Set the same password here as you did on Notify for Chrome.</string>

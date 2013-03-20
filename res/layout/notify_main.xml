@@ -8,9 +8,68 @@
 	android:paddingTop="@dimen/activity_vertical_margin"
 	tools:context=".SettingsActivity" >
 
-	<fragment class="com.thoughtmonkeys.notify.PrefsFragment" 
+	<LinearLayout
+		android:id="@+id/linearLayout1"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignLeft="@+id/prefsFragment"
+		android:layout_alignParentTop="true"
+		android:layout_alignRight="@+id/prefsFragment"
+		android:orientation="vertical"
+		android:paddingLeft="@dimen/pref_padding"
+		android:paddingRight="@dimen/pref_padding" >
+
+		<TextView
+			android:id="@+id/accessibilityLabel"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignLeft="@+id/accessibilityButton"
+			android:layout_below="@+id/accessibilityLabel"
+			android:text="@string/pref_accessibility"
+			android:textAllCaps="true"
+			android:textStyle="bold" />
+
+		<TextView
+			android:id="@+id/accessibilitySummary"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/pref_accessibility_summary" />
+
+		<Button
+			android:id="@+id/accessibilityButton"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
+			android:onClick="goToAccessibilityServices"
+			android:text="@string/pref_accessibility_button" />
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content" >
+
+			<TextView
+				android:id="@+id/accessibilityStatus"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/pref_accessibility_status" />
+
+			<TextView
+				android:id="@+id/accessibilityOnOff"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginLeft="@dimen/pref_padding"
+				android:text="@string/pref_accessibility_disabled" />
+				
+		</LinearLayout>
+	</LinearLayout>
+
+	<fragment
 		android:id="@+id/prefsFragment"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content" />
-	
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/linearLayout1"
+		android:layout_centerHorizontal="true"
+		android:layout_marginTop="15dp"
+		class="com.thoughtmonkeys.notify.PrefsFragment" />
+
 </RelativeLayout>

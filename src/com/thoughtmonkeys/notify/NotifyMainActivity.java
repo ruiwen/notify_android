@@ -3,11 +3,16 @@ package com.thoughtmonkeys.notify;
 import com.google.analytics.tracking.android.EasyTracker;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.widget.TextView;
 
 
 public class NotifyMainActivity extends Activity implements OnSharedPreferenceChangeListener {
@@ -17,19 +22,29 @@ public class NotifyMainActivity extends Activity implements OnSharedPreferenceCh
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.notify_main);
 		
-//		getFragmentManager().beginTransaction()
-//			.replace(R.id.prefsFragment, new PrefsFragment())
-//			.commit();
-			
 	}
-
+	
 	@Override
-	public void onStart() {
+	protected void onStart() {
+	
 		super.onStart();
 		
 		EasyTracker.getInstance().activityStart(this);
+		
+		String servicesEnabled = Settings.Secure.getString(this.getContentResolver(),android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+		
+		if(servicesEnabled != null) {
+			Log.d("Notify", "Services: " + servicesEnabled);
+			Log.d("Notify", "Matches: " + servicesEnabled.matches(".*" + getPackageName() + "/com.thoughtmonkeys.notify.NotificationService.*"));
+			TextView accessibilityOnOff = (TextView)findViewById(R.id.accessibilityOnOff);
+
+			accessibilityOnOff.setText(
+			    (servicesEnabled.matches(".*" + getPackageName() + "/com.thoughtmonkeys.notify.NotificationService.*")) ?
+			         R.string.pref_accessibility_enabled : R.string.pref_accessibility_disabled);
+		}
 	}
 
+	
 	@Override
 	public void onStop() {
 		super.onStop();
@@ -54,6 +69,11 @@ public class NotifyMainActivity extends Activity implements OnSharedPreferenceCh
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.notify_main, menu);
 		return true;
+	}
+	
+	public void goToAccessibilityServices(View view) {
+		Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+		startActivityForResult(intent, 0);
 	}
 
 }
