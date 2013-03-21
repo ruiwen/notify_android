@@ -36,6 +36,7 @@ import android.widget.RemoteViews;
 
 import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.google.analytics.tracking.android.Tracker;
+import com.thoughtmonkeys.notify.donate.R;
 
 public class NotificationService extends AccessibilityService {
 

@@ -2,6 +2,8 @@ package com.thoughtmonkeys.notify;
 
 import java.util.Map;
 
+import com.thoughtmonkeys.notify.donate.R;
+
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ApplicationInfo;

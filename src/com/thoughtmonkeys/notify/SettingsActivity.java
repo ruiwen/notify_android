@@ -2,6 +2,8 @@ package com.thoughtmonkeys.notify;
 
 import java.util.List;
 
+import com.thoughtmonkeys.notify.donate.R;
+
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Configuration;

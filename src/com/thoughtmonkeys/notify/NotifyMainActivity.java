@@ -1,6 +1,7 @@
 package com.thoughtmonkeys.notify;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.thoughtmonkeys.notify.donate.R;
 
 import android.app.Activity;
 import android.content.Intent;
