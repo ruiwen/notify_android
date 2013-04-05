@@ -71,6 +71,15 @@ public class NotifyMainActivity extends Activity implements OnSharedPreferenceCh
 		return true;
 	}
 	
+	
+	public void launchAbout(MenuItem item) {
+	
+		// Launch the AboutActivity
+		Intent aboutIntent = new Intent(this, AboutActivity.class);
+		startActivity(aboutIntent);
+	}
+	
+	
 	public void goToAccessibilityServices(View view) {
 		Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
 		startActivityForResult(intent, 0);
