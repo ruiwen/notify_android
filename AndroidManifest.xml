@@ -27,10 +27,12 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<!-- <activity
+		<!--
+		<activity
 			android:name="com.thoughtmonkeys.notify.SettingsActivity"
 			android:label="@string/title_activity_settings" >
-		</activity> -->
+		</activity>
+		-->
 		<service
 			android:name="com.thoughtmonkeys.notify.NotificationService"
 			android:enabled="true"
@@ -43,13 +45,16 @@
 				android:name="android.accessibilityservice"
 				android:resource="@xml/serviceconfig" />
 		</service>
-		
-		<!-- Used for install referral measurement-->
-		<service android:name="com.google.analytics.tracking.android.CampaignTrackingService"/>
-		<receiver android:name="com.google.analytics.tracking.android.CampaignTrackingReceiver" android:exported="true">
+
+		<!-- Used for install referral measurement -->
+		<service android:name="com.google.analytics.tracking.android.CampaignTrackingService" />
+
+		<receiver
+			android:name="com.google.analytics.tracking.android.CampaignTrackingReceiver"
+			android:exported="true" >
 			<intent-filter>
 				<action android:name="com.android.vending.INSTALL_REFERRER" />
- 			</intent-filter>
+			</intent-filter>
 		</receiver>
 	</application>
 
