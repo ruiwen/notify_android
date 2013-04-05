@@ -99,6 +99,11 @@ public class NotifyMainActivity extends Activity implements OnSharedPreferenceCh
 	
 	
 	public void goToAccessibilityServices(View view) {
+	
+		// Track clicks on the GoToAccessibilityServices button
+		mGaTracker.sendEvent("app_action", "accessibility_button", "", 1L);
+	
+		// Launch the Accessibility Services screen
 		Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
 		startActivityForResult(intent, 0);
 	}
