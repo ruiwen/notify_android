@@ -1,6 +1,8 @@
 package com.thoughtmonkeys.notify;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.GoogleAnalytics;
+import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,11 +13,16 @@ import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 
 public class NotifyMainActivity extends Activity implements OnSharedPreferenceChangeListener {
+
+	// GA tracking
+	private Tracker mGaTracker;
+	private GoogleAnalytics mGaInstance;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +37,10 @@ public class NotifyMainActivity extends Activity implements OnSharedPreferenceCh
 		super.onStart();
 		
 		EasyTracker.getInstance().activityStart(this);
+		
+		// Initialise other bits
+		mGaInstance = GoogleAnalytics.getInstance(this);
+		mGaTracker = mGaInstance.getTracker("UA-39360545-1");
 		
 		String servicesEnabled = Settings.Secure.getString(this.getContentResolver(),android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
 		
@@ -66,6 +77,10 @@ public class NotifyMainActivity extends Activity implements OnSharedPreferenceCh
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+	
+		// Track menu show
+		mGaTracker.sendEvent("app_action", "menu_click", "", 1L);
+	
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.notify_main, menu);
 		return true;
@@ -73,6 +88,9 @@ public class NotifyMainActivity extends Activity implements OnSharedPreferenceCh
 	
 	
 	public void launchAbout(MenuItem item) {
+	
+		// Track about show
+		mGaTracker.sendEvent("app_action", "about_show", "", 1L);
 	
 		// Launch the AboutActivity
 		Intent aboutIntent = new Intent(this, AboutActivity.class);
