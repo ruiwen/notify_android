@@ -56,6 +56,15 @@
 				<action android:name="com.android.vending.INSTALL_REFERRER" />
 			</intent-filter>
 		</receiver>
+
+		<activity
+			android:name="com.thoughtmonkeys.notify.AboutActivity"
+			android:label="@string/action_about"
+			android:parentActivityName="com.thoughtmonkeys.notify.NotifyMainActivity" >
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value="com.thoughtmonkeys.notify.NotifyMainActivity" />
+		</activity>
 	</application>
 
 </manifest>
