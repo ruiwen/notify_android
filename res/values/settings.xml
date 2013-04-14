@@ -2,7 +2,7 @@
 <resources>
 
 	<string name="app_name">Notify</string>
-	<string name="version_name">0.12</string>
+	<string name="version_name">0.13</string>
 	<string name="author_name">Ruiwen Chua</string>
 	<string name="action_about">About</string>
 	
