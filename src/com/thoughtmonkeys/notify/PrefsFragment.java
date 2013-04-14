@@ -30,7 +30,13 @@ public class PrefsFragment extends PreferenceFragment implements OnSharedPrefere
 		addPreferencesFromResource(R.xml.preferences);
 		
 		Log.d("Notify", "Load Preferences");
-		
+	}
+	
+	@Override
+	public void onStart() {
+	
+		super.onStart();
+	
 		PreferenceCategory targetCategory = (PreferenceCategory)findPreference(getActivity().getString(R.string.pref_apps));
 		// Add the allowed apps
 //		SharedPreferences prefs = getActivity().getSharedPreferences("Allowed apps", 0);
@@ -40,6 +46,12 @@ public class PrefsFragment extends PreferenceFragment implements OnSharedPrefere
 		PackageManager pm = getActivity().getPackageManager();
 		
 		for(Map.Entry<String,?> entry : prefs.getAll().entrySet()){
+		
+			// If preference already exists, skip processing
+			if(targetCategory.findPreference(entry.getKey()) != null) { 
+				continue; 
+			}
+		
 			CheckBoxPreference cbP = new CheckBoxPreference(getActivity());
 
 			String key = entry.getKey();
