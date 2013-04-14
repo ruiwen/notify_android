@@ -33,5 +33,14 @@
 
 	<string name="pwd_key">pwd</string>
 	
+	<string name="feedback_btn_text">Send feedback</string>
+	<string name="feedback_email">apps@thoughtmonkeys.com</string>
+	<string name="feedback_subject">Feedback on Notify</string>
+	<string name="feedback_body">Thanks for the feedback! Would love to know how I can make Notify better! \n — Ruiwen</string>
+	<string name="feedback_chooser_title">Send feedback</string>
+	
+	<string name="donate_btn_text">Donate</string>
+	<string name="donate_app_name">com.thoughtmonkeys.notify.donate</string>
+	
 	<string name="log_tag">Notify</string>
 </resources>
