@@ -61,7 +61,7 @@ public class NotificationService extends AccessibilityService {
 		
 		// Initialise other bits
 		mGaInstance = GoogleAnalytics.getInstance(this);
-		mGaTracker = mGaInstance.getTracker("UA-39360545-1");
+		mGaTracker = mGaInstance.getTracker(getString(R.string.ga_trackingId));
 
 		pref = getSharedPreferences(getString(R.string.pref_file), 0);
 		res = getResources();
