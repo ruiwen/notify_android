@@ -39,5 +39,8 @@
 	<string name="feedback_body">Thanks for the feedback! Would love to know how I can make Notify better! \n — Ruiwen</string>
 	<string name="feedback_chooser_title">Send feedback</string>
 	
+	<string name="donate_btn_text">Donate</string>
+	<string name="donate_app_name">com.thoughtmonkeys.notify.donate</string>
+	
 	<string name="log_tag">Notify</string>
 </resources>

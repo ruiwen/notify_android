@@ -47,4 +47,18 @@ public class AboutActivity extends Activity {
 	}
 	
 
+	public void yesDonate(View view) {
+	
+		// Track the donate button click
+		EasyTracker.getTracker().sendEvent("app_action", "donate_intent", "", 1L);
+		
+		// Kick off a new Intent to show the app page
+		try {
+		    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getString(R.string.donate_app_name))));
+		} catch (android.content.ActivityNotFoundException anfe) {
+		    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + getString(R.string.donate_app_name))));
+		}
+	}
+	
+
 }
