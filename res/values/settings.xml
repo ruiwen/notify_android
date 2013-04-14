@@ -32,4 +32,6 @@
 	<string name="handshake_tag">HINOTIFY</string>
 
 	<string name="pwd_key">pwd</string>
+	
+	<string name="log_tag">Notify</string>
 </resources>
