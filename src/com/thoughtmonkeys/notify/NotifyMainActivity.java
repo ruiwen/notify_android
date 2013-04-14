@@ -40,7 +40,7 @@ public class NotifyMainActivity extends Activity implements OnSharedPreferenceCh
 		
 		// Initialise other bits
 		mGaInstance = GoogleAnalytics.getInstance(this);
-		mGaTracker = mGaInstance.getTracker("UA-39360545-1");
+		mGaTracker = mGaInstance.getTracker(getString(R.string.ga_trackingId));
 		
 		String servicesEnabled = Settings.Secure.getString(this.getContentResolver(),android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
 		
