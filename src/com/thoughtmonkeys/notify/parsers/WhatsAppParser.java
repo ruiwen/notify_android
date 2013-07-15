@@ -2,7 +2,7 @@ package com.thoughtmonkeys.notify.parsers;
 
 import java.util.HashMap;
 
-import com.thoughtmonkeys.notify.dev.R;
+import com.thoughtmonkeys.notify.R;
 
 import android.content.Context;
 import android.util.Log;
@@ -18,16 +18,20 @@ public class WhatsAppParser extends BaseParser {
 
 	@Override
 	public HashMap<String, String> parse() {
-		
+	
+		super.parse();
+		super.componentise();
+
 		try {
 
-			String notification_title = ((TextView) this.localViews.findViewById(TITLE_ID)).getText().toString(); 
+			String notification_title = ((TextView) this.localViews.findViewById(TITLE_ID)).getText().toString();
 			// txt is expected to be of the format:
 			// <contact name> @ <chat group name>: <message>
 			String txt = ((TextView) this.localViews.findViewById(INBOX0_ID)).getText().toString();
 			
 			// Multiple on-going chats
-			if(notification_title == "WhatsApp") {
+			//if(notification_title.equals("WhatsApp")) {
+			if(txt.contains("@")) {
 				
 				String[] parts = txt.split(": ");
 				String msg = parts[1];
@@ -42,8 +46,9 @@ public class WhatsAppParser extends BaseParser {
 
 			// only one on-going chat group
 			else {
-				this.results.put("title", notification_title);
-				this.results.put("text", txt);
+				String[] parts = txt.split(": ");
+				this.results.put("title", parts[0]);
+				this.results.put("text", parts[1]);
 				
 			}
 			
