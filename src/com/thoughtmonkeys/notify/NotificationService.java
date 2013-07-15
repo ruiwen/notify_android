@@ -2,7 +2,6 @@ package com.thoughtmonkeys.notify;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -11,15 +10,12 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
-import android.app.Notification;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -28,14 +24,13 @@ import android.net.DhcpInfo;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
-import android.widget.RemoteViews;
-
 import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.google.analytics.tracking.android.Tracker;
+
+import com.thoughtmonkeys.notify.parsers.NotificationParser;
 
 public class NotificationService extends AccessibilityService {
 
@@ -92,108 +87,17 @@ public class NotificationService extends AccessibilityService {
 
 			
 		    try {
-		        
-				// UDP broadcast code obtained from
-				// https://code.google.com/p/boxeeremote/wiki/AndroidUDP
-				Notification notification = (Notification) event.getParcelableData();
-				Log.d("Notify", "notification: " + notification);
-				Log.d("Notify", "tickerText: " + notification.tickerText);
+
+				HashMap<String, String> results = NotificationParser.parse(this.getApplicationContext(), event);
 				
-						
-				RemoteViews views = notification.contentView;
-//				RemoteViews views = notification.tickerView;
-				Class secretClass = views.getClass();
-		        
-			        
-		        Map<Integer, String> txt = new HashMap<Integer, String>();
-
-		        Field outerFields[] = secretClass.getDeclaredFields();
-		        for (int i = 0; i < outerFields.length; i++) {
-		            if (!outerFields[i].getName().equals("mActions")) continue;
-
-		            outerFields[i].setAccessible(true);
-
-	                Object value = null;
-	                Integer type = null;
-	                Integer viewId = null;
-	                
-	                ArrayList<Object> actions = (ArrayList<Object>) outerFields[i].get(views);
-		            for (Object action : actions) {
-		                Field innerFields[] = action.getClass().getDeclaredFields();
-
-		                for (Field field : innerFields) {
-		                    field.setAccessible(true);
-		                    
-		                    try {
-			                    if (field.getName().equals("value")) {
-			                        value = field.get(action);
-			                        Log.d("Notify", "value: " + value.toString());
-			                    } 
-			                    if (field.getName().equals("type")) {
-			                        type = field.getInt(action);
-			                    }
-			                    if (field.getName().equals("viewId")) {
-			                        viewId = field.getInt(action);
-			                    }
-		                    
-		                    }
-		                    catch(Exception e) { e.printStackTrace(); }
-
-		                }
-
-		                if (type != null && (type == 9 || type == 10)) {
-		                    
-
-		                	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-		                			Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-			                    txt.put(viewId, value.toString());
-			                    
-			                    // Set title
-					            for(int item :  new int[]{16908310, 2131230870, 2131231209}) {
-					            	if(txt.get(item) != null) {
-					            		title = txt.get(item);
-					            		//break;
-					            	}
-					            }
-					            		                    
-			                    // Set text
-				            	for(int item : new int[] {16908358, 2131230787, 2131231210}) {
-				            		if(txt.get(item) != null && !txt.get(item).equals('0')) {
-				            			text = txt.get(item);
-				            			//break;
-				            		}
-				            	}
-		                	}
-		                	
-		                	else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-		                		
-	                			if(title == null) {
-	                				title = value.toString();
-	                			}
-	                			
-	                			else if(text == null) {
-	                				text = value.toString();
-	                			}
-		                	}
-		                    
-		                    Log.d("Notify", "title: " + title + " " + "text: " + text);
-		                    
-		                }
-		                
-
-//			            info = txt.get(16909082);
-			    
-		            	
-		            	// Abort if we've filled both title and text
-		            	if(title != null && text != null) {
-		            		break;
-		            	}
-		            }
-
-		            
-		        }
-
+				Log.d(getString(R.string.log_tag), "res: "+ results);
 				
+				title = results.get("title");
+				text = results.get("text");
+				
+				Log.d(getString(R.string.log_tag), "title: "+ title);
+				Log.d(getString(R.string.log_tag), "text: "+ text);
+								
 				boolean send = true;
 				String packageName = event.getPackageName().toString();
 				// Set/check preferences
