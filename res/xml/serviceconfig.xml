@@ -4,5 +4,6 @@
      android:notificationTimeout="100"
      android:settingsActivity=".SettingsActivity"
      android:canRetrieveWindowContent="true"
-	 android:description="@string/accessibility_service_desc"
+     android:accessibilityFlags="flagIncludeNotImportantViews"
+     android:description="@string/accessibility_service_desc"
 />
