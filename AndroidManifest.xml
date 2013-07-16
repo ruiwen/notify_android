@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="com.thoughtmonkeys.notify.donate"
-	android:versionCode="2"
+	android:versionCode="3"
 	android:versionName="@string/version_name" >
 
 	<uses-sdk
-		android:minSdkVersion="11"
-		android:targetSdkVersion="16" />
+		android:minSdkVersion="16"
+		android:targetSdkVersion="17" />
 
 	<uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" />
 	<uses-permission android:name="android.permission.INTERNET" />
