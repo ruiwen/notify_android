@@ -9,7 +9,7 @@ import android.content.res.Resources.NotFoundException;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
-import com.thoughtmonkeys.notify.R;
+import com.thoughtmonkeys.notify.donate.R;
 import com.thoughtmonkeys.notify.parsers.*;
 
 public class NotificationParser {
