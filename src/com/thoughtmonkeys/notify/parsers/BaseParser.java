@@ -4,10 +4,13 @@ import java.util.HashMap;
 
 import android.app.Notification;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.RemoteViews;
+import android.widget.TextView;
 
 public class BaseParser {
 
@@ -41,13 +44,15 @@ public class BaseParser {
 
 	public HashMap<String, String> parse() {
 		
+		Log.d(this.context.getString(R.string.log_tag), "[debug: parse()] BaseParser");
+		
 		this.results = new HashMap<String, String>();
 		this.results.put("packageName", this.packageName);
 		
-		String[] tickerText = this.notification.tickerText.toString().split(": ");
-		this.results.put("title", tickerText[0]);
-		this.results.put("text", tickerText.length > 1 ? tickerText[1]: "");
+		Log.d(this.context.getString(R.string.log_tag), "[debug BaseParser:parse()] " + this.notification.tickerText.toString());
 		
+		this.results.put("title", this.notification.tickerText.toString());
+		this.results.put("text", "");
 		
 		return results;
 	}	
