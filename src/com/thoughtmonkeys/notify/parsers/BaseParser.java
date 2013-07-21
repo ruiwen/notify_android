@@ -2,7 +2,7 @@ package com.thoughtmonkeys.notify.parsers;
 
 import java.util.HashMap;
 
-import com.thoughtmonkeys.notify.R;
+import com.thoughtmonkeys.notify.donate.R;
 
 import android.app.Notification;
 import android.content.Context;
