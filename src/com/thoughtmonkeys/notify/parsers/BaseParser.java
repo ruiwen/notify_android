@@ -51,11 +51,18 @@ public class BaseParser {
 		this.results = new HashMap<String, String>();
 		this.results.put("packageName", this.packageName);
 		
-		Log.d(this.context.getString(R.string.log_tag), "[debug BaseParser:parse()] " + this.notification.tickerText.toString());
-		
-		this.results.put("title", this.notification.tickerText.toString());
+		String ticker = "";
+		try {
+	        ticker = this.notification.tickerText.toString(); 
+			Log.d(this.context.getString(R.string.log_tag), "[debug BaseParser:parse()] " + ticker);
+		}
+		catch(NullPointerException e) {
+			
+		}
+
+		this.results.put("title", ticker);
 		this.results.put("text", "");
-		
+
 		return results;
 	}	
 
