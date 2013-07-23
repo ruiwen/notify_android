@@ -45,7 +45,6 @@ public class PrefsFragment extends PreferenceFragment implements OnSharedPrefere
 		Log.d("Notify", "Preferences: " + prefs.getAll().entrySet());
 		
 		PackageManager pm = getActivity().getPackageManager();
-		
 		for(Map.Entry<String,?> entry : prefs.getAll().entrySet()){
 		
 			// If preference already exists, skip processing
