@@ -23,7 +23,6 @@ public class HangoutsParser extends BaseParser {
 		Log.d(this.context.getString(R.string.log_tag), "[debug HangoutsParser:parse()]");
 		
 		super.parse();
-		super.componentise();
 		
 		try {
 
