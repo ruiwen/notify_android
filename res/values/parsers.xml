@@ -3,4 +3,5 @@
 	<string name="com.whatsapp">WhatsAppParser</string>
 	<string name="com.google.android.talk">HangoutsParser</string>
 	<string name="com.android.mms">SMSParser</string>
+	<string name="com.facebook.katana">FacebookParser</string>
 </resources>
