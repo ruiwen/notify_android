@@ -19,24 +19,30 @@ public class HangoutsParser extends BaseParser {
 
 	@Override
 	public HashMap<String, String> parse() {
+	
+		Log.d(this.context.getString(R.string.log_tag), "[debug HangoutsParser:parse()]");
+		
 		super.parse();
-		super.componentise();
 		
 		try {
-			String notification_title = ((TextView) this.localViews.findViewById(TITLE_ID)).getText().toString();
-			
-			if(this.results.get("text").contains(", ")) {
-				return this.results;
-			}
+
 			// Multiple on-going chats
-			// INBOX0_ID should be populated
-			else if(notification_title.contains("new messages")) {
-				String txt = ((TextView) this.localViews.findViewById(INBOX0_ID)).getText().toString();	
-				this.results.put("text", txt);
+			// eg. "2 new messages: Chat 1, Chat 2
+			if(this.results.get("title").startsWith("new messages", 2)) {
+				Log.d(this.context.getString(R.string.log_tag), "[debug HangoutsParser:parse()] multiple chats");
+				Log.d(this.context.getString(R.string.log_tag), this.results.get("title"));
+				String[] parts = this.results.get("title").split(": ");
+				this.results.put("title", parts[0]);				
+				this.results.put("text", parts[1]);
 			}
-		
-			// Try for BIGTEXT_ID
+					
+			// Single chat
+			// eg. Ruiwen Chua: hello world
+			// eg. "Ruiwen Chua: 2 new messages"
 			else {
+				String title = ((TextView) this.localViews.findViewById(TITLE_ID)).getText().toString();
+				this.results.put("title", title);
+			
 				Log.d(this.context.getString(R.string.log_tag), "BIGTEXT");
 				String txt = ((TextView) this.localViews.findViewById(BIGTEXT_ID)).getText().toString();	
 				String[] parts = txt.split("[\\r\\n]+");

@@ -23,8 +23,7 @@ public class WhatsAppParser extends BaseParser {
 		Log.d(this.context.getString(R.string.log_tag), "[debug WhatsAppParser:parse()]");
 		
 		super.parse();
-		super.componentise();
-
+		
 		try {
 
 			String notification_title = ((TextView) this.localViews.findViewById(TITLE_ID)).getText().toString();

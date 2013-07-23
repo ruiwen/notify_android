@@ -40,13 +40,13 @@ public class PrefsFragment extends PreferenceFragment implements OnSharedPrefere
 		super.onStart();
 	
 		PreferenceCategory targetCategory = (PreferenceCategory)findPreference(getActivity().getString(R.string.pref_apps));
+		targetCategory.setOrderingAsAdded(false);
 		// Add the allowed apps
 //		SharedPreferences prefs = getActivity().getSharedPreferences("Allowed apps", 0);
 		SharedPreferences prefs = prefMgr.getSharedPreferences();
 		Log.d("Notify", "Preferences: " + prefs.getAll().entrySet());
 		
 		PackageManager pm = getActivity().getPackageManager();
-		
 		for(Map.Entry<String,?> entry : prefs.getAll().entrySet()){
 		
 			// If preference already exists, skip processing

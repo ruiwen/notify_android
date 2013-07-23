@@ -48,6 +48,7 @@ public class BaseParser {
 		
 		Log.d(this.context.getString(R.string.log_tag), "[debug: parse()] BaseParser");
 		
+		this.componentise();
 		this.results = new HashMap<String, String>();
 		this.results.put("packageName", this.packageName);
 		
