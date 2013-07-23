@@ -2,4 +2,5 @@
 <resources>
 	<string name="com.whatsapp">WhatsAppParser</string>
 	<string name="com.google.android.talk">HangoutsParser</string>
+	<string name="com.android.mms">SMSParser</string>
 </resources>
